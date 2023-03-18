@@ -1,32 +1,20 @@
-import requests
-from flask import Flask, render_template, request
+// Assuming you already have a web3 instance and the contract ABI and address
 
-app = Flask(__name__)
+// First, get the contract instance
+const contractInstance = new web3.eth.Contract(contractABI, contractAddress);
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+// Next, define the transaction parameters
+const recipient = '0x123...'; // the Ethereum address of the recipient
+const amount = '1000000000000000000'; // the amount of tokens to send, in wei (1 token = 10^18 wei)
 
-@app.route('/stock', methods=['GET', 'POST'])
-def stock():
-    if request.method == 'POST':
-        symbol = request.form['symbol']
-        api_key = 'YOUR_API_KEY'
-        url = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}'
-        response = requests.get(url)
-        data = response.json()
-        if 'Error Message' in data:
-            error = 'Invalid symbol. Please try again.'
-            return render_template('index.html', error=error)
-        else:
-            dates = []
-            prices = []
-            for date in data['Time Series (Daily)']:
-                dates.append(date)
-                prices.append(float(data['Time Series (Daily)'][date]['4. close']))
-            return render_template('stock.html', symbol=symbol, dates=dates, prices=prices)
-    else:
-        return render_template('index.html')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+// Call the `transfer` function on the contract instance, using the `send` method
+contractInstance.methods.transfer(recipient, amount).send({ from: senderAddress })
+  .on('transactionHash', function(hash) {
+    console.log(`Transaction hash: ${hash}`);
+  })
+  .on('confirmation', function(confirmationNumber, receipt) {
+    console.log(`Confirmation number: ${confirmationNumber}`);
+  })
+  .on('error', function(error, receipt) {
+    console.error(`Transaction error: ${error}`);
+  });
